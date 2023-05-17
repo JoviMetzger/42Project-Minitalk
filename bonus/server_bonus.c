@@ -16,7 +16,7 @@
 *	This function displays an error message and 
 *	terminates the program by calling exit(EXIT_FAILURE).
 */
-void	ft_error_msg(void)
+static void	ft_error_msg(void)
 {
 	ft_printf(RED "Error\n" RESET);
 	exit(EXIT_FAILURE);
