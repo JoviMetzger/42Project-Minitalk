@@ -28,28 +28,28 @@ static void	handle_sig(int signal)
 	}
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-    int                 pid;
-    
-    (void)argv;
-    if (argc == 1)
-    {
-        pid = getpid();
-        ft_printf(BLUE BOLD "Server PID: %d\n" RESET, pid);
-        ft_printf(BLUE "Waiting for message...\n" RESET);
-        while (1)
-        {
-            signal(SIGUSR1, handle_sig);
-	        signal(SIGUSR2, handle_sig);
-		    pause();
-        }
-    }
+	int	pid;
+
+	(void)argv;
+	if (argc == 1)
+	{
+		pid = getpid();
+	    ft_printf(BLUE BOLD "Client PID: %d\n" RESET, pid);
+	    ft_printf(BLUE "Waiting for a message..\n" RESET);
+	    while (argc == 1)
+	    {
+	    	signal(SIGUSR1, handle_sig);
+	    	signal(SIGUSR2, handle_sig);
+	    	pause();
+	    }
+	}
     else
     {
         ft_printf(RED "Error: Wrong format\n" RESET);
-        ft_printf(RED "Try: ./server\n" RESET);
-        return (EXIT_FAILURE);
+		ft_printf(RED "Try: ./client <PID> <MESSAGE>\n" RESET);
+		return (1);
     }
-    return (0);
+	return (0);
 }
