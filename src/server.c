@@ -59,7 +59,7 @@ int	main(int argc, char **argv)
 	if (argc == 1)
 	{
 		pid = getpid();
-		ft_printf(BLUE BOLD "Client PID: %d\n" RESET, pid);
+		ft_printf(BLUE BOLD "Server PID: %d\n" RESET, pid);
 		ft_printf(BLUE "Waiting for a message..\n" RESET);
 		while (argc == 1)
 		{
