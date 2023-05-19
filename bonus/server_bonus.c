@@ -6,21 +6,11 @@
 /*   By: jmetzger <jmetzger@student.codam.n>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/05/16 12:12:49 by jmetzger      #+#    #+#                 */
-/*   Updated: 2023/05/17 14:16:14 by jmetzger      ########   odam.nl         */
+/*   Updated: 2023/05/19 09:12:07 by jmetzger      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk_bonus.h"
-
-/* ft_error_msg();
-*	This function displays an error message and 
-*	terminates the program by calling exit(EXIT_FAILURE).
-*/
-static void	ft_error_msg(void)
-{
-	ft_printf(RED "Error\n" RESET);
-	exit(EXIT_FAILURE);
-}
 
 /* action();
 *	This function performs an action based on the received character (c). 
@@ -42,7 +32,10 @@ static void	action(char *c, int *received, int *given_pid, int *bit)
 		*received = 0;
 		*c = 0;
 		if (kill(*given_pid, SIGUSR1) == -1)
-			ft_error_msg();
+		{
+			ft_printf(RED "Error\n" RESET);
+			exit(EXIT_FAILURE);
+		}
 		return ;
 	}
 	*bit = 0;
@@ -131,5 +124,5 @@ int	main(int argc, char **argv)
 		ft_printf(RED "Error: Wrong format\n" RESET);
 		ft_printf(RED "Try: ./server_bonus\n" RESET);
 	}
-	return (EXIT_FAILURE);
+	return (0);
 }
