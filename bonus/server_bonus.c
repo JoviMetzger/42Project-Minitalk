@@ -100,7 +100,7 @@ static void	handle_sig(int sig, siginfo_t *info, void *context)
 */
 int	main(int argc, char **argv)
 {
-	int					pid;
+	int			pid;
 	struct sigaction	sig;
 
 	(void)argv;
