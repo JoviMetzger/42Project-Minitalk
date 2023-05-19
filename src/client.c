@@ -6,80 +6,149 @@
 /*   By: jmetzger <jmetzger@student.codam.n>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/05/15 14:52:08 by jmetzger      #+#    #+#                 */
-/*   Updated: 2023/05/18 09:52:22 by jmetzger      ########   odam.nl         */
+/*   Updated: 2023/05/19 09:13:30 by jmetzger      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-/* send_bits():
-*	This function is responsible for sending individual bits of a character (i) 
-*	to a specified PID using signals.
-*	- It enters a loop that iterates 8 times, representing each bit 
-*	  of the character.
-*	- Inside the loop, it checks if the bit-th bit of (i) is set to 1 using 
-*	  bitwise AND operation (i & (1 << bit)).
-*		- If the (bit) is 1, it sends SIGUSR1 signal to the PID 
-*		  using the kill function.
-*		- If the (bit) is 0, it sends SIGUSR2 signal to the PID 
-*		  using the kill function.
-*	- After sending the signal, it pauses execution for a short time 
-*	  using usleep() to allow the signal to be processed.
-*	- It increments the (bit) variable by 1.
+/* ft_send();
+*   This function is responsible for sending a single bit of data to 
+*   the specified process ID.
+*   - It takes two parameters: 
+*       - bit -> the bit value to be sent, either 0 or 1.
+*       - pid -> the process ID of the recipient process.
+*   - If the bit value is non-zero (1):
+*       - Send a SIGUSR2 signal to the process with the given pid using 
+*         the kill function.
+*       - If the kill function returns -1 (indicating an error), 
+*         call the ft_error_msg.
+*   - If the bit value is zero:
+*       - Send a SIGUSR1 signal to the process with the given pid 
+*         using the kill function.
+*       - If the kill function returns -1 (indicating an error), 
+*         call the ft_error_msg.
+*   - Pause the execution of the current process until a signal 
+*     is received using the pause function.
+*   - Add a small delay of 100 microseconds using the usleep function.
 */
-static void	send_bits(int pid, char i)
+static void	ft_send(int bit, int pid)
+{
+	if (bit)
+	{
+		if (kill(pid, SIGUSR2) == -1)
+		{
+			ft_printf(RED "Error\n" RESET);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		if (kill(pid, SIGUSR1) == -1)
+		{
+			ft_printf(RED "Error\n" RESET);
+			exit(EXIT_FAILURE);
+		}
+	}
+	pause();
+	usleep(100);
+}
+
+/* send_bits();
+*   This function sends a character (c) byte by byte to 
+*   the specified process ID. 
+*   - It uses the ft_send() function to send each bit of the character.
+*   - The c value is bitwise shifted left (c <<= 1) after each bit 
+*     is sent to process the next bit.
+*/
+static void	send_bits(char c, int pid)
 {
 	int	bit;
 
 	bit = 0;
 	while (bit < 8)
 	{
-		if (i & (1 << bit))
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		usleep(100);
+		ft_send(c & 128, pid);
+		c <<= 1;
 		bit++;
 	}
 }
 
-/* main():
-*	This function sends individual bits of characters in the provided message 
-*	to the specified process ID (PID) using signals (SIGUSR1 and SIGUSR2). 
-*	- It first checks if the argc is equal to 3 (PID and message).
-*		- It converts the string representation of the PID (argv[1]) 
-*		  to an integer using ft_atoi() function.
-*		- It enters a loop that iterates over each character of 
-*		  the message (argv[2]) using the (i) variable as the index.
-*		- Inside the loop, it calls the send_bits() function to send each 
-*		  character to the specified PID.
-*		- After sending all characters, it calls send_bits() again to send 
-*		  a newline character ('\n') as the end marker.
-*	- If the argc is not equal to 3:
-*		- It prints an error message indicating the wrong format 
-*		  and suggests the correct format.
+/* sender();
+*   This function sends a null-terminated string (str) to 
+*   the specified process ID. 
+*   - It iterates over each character in the string and calls 
+*     the send_bits() function to send each character.
+*/
+static void	sender(char *str, int pid)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		send_bits(str[i++], pid);
+	}
+	send_bits('\0', pid);
+}
+
+/* confirmed();
+*   This function is a signal handler that is called when a signal is received 
+*   - It counts the number of times each signal is received. By counting 
+*	  the signals received, this function helps to confirm the successful 
+*	  transmission of each bit.
+*       - If the signal argument is SIGUSR1:
+*			- It increments the sent variable.
+*		- If the signal argument is SIGUSR2:
+*			- It also increments the sent variable.
+*/
+static void	confirmed(int signal)
+{
+	static int	sent;
+
+	if (signal == SIGUSR1)
+		++sent;
+	if (signal == SIGUSR2)
+		++sent;
+}
+
+/* main();
+*   This function sets up signal handlers, converts the process ID, 
+*   and calls the sender() function to send the message.
+*   - First it checks the message is not empty. 
+*   - If the arguments are valid (argc == 3);
+*       - It sets up signal handlers for SIGUSR1 and SIGUSR2.
+*       - It converts the PID to an integer using ft_atoi()
+*		- If the PID is smaller than 1, it prints an error message.
+*       - Otherwise, it calls the sender() function to send 
+*		  the message (argv[2]) to the specified PID.
+*   - If the arguments are not valid, it displays an error message.
 */
 int	main(int argc, char **argv)
 {
 	int	pid;
-	int	i;
 
-	i = 0;
+	if (*argv[2] == 0)
+	{
+		ft_printf(RED "Please, insert a non-empty message.\n" RESET);
+		return (EXIT_FAILURE);
+	}
 	if (argc == 3)
 	{
+		signal(SIGUSR1, confirmed);
+		signal(SIGUSR2, confirmed);
 		pid = ft_atoi(argv[1]);
-		while (argv[2][i] != '\0')
+		if (pid <= 0)
 		{
-			send_bits(pid, argv[2][i]);
-			i++;
+			ft_printf(RED "Error: Invalid PID\n" RESET);
+			exit(EXIT_FAILURE);
 		}
-		send_bits(pid, '\n');
+		sender(argv[2], pid);
 	}
 	else
 	{
 		ft_printf(RED "Error: Wrong format\n" RESET);
-		ft_printf(RED "Try: ./client <PID> <MESSAGE>\n" RESET);
-		return (1);
+		ft_printf(RED "Try: ./client_bonus <PID> <MESSAGE>\n" RESET);
 	}
 	return (0);
 }
