@@ -6,7 +6,7 @@
 /*   By: jmetzger <jmetzger@student.codam.n>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/05/16 12:12:28 by jmetzger      #+#    #+#                 */
-/*   Updated: 2023/05/17 15:07:47 by jmetzger      ########   odam.nl         */
+/*   Updated: 2023/05/19 09:13:42 by jmetzger      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static void	sender(char *str, int pid)
 	{
 		send_bits(str[i++], pid);
 	}
-	send_bits(0, pid);
+	send_bits('\0', pid);
 }
 
 /* confirmed();
@@ -119,13 +119,14 @@ static void	confirmed(int signal)
 
 /* main();
 *   This function sets up signal handlers, converts the process ID, 
-*   and calls the sender function to send the message.
+*   and calls the sender() function to send the message.
 *   - First it checks the message is not empty. 
 *   - If the arguments are valid (argc == 3);
 *       - It sets up signal handlers for SIGUSR1 and SIGUSR2.
 *       - It converts the PID to an integer using ft_atoi()
-*       - It calls the sender() function to send the message (argv[2]) 
-*         to the specified PID.
+*		- If the PID is smaller than 1, it prints an error message.
+*       - Otherwise, it calls the sender() function to send 
+*		  the message (argv[2]) to the specified PID.
 *   - If the arguments are not valid, it displays an error message.
 */
 int	main(int argc, char **argv)
@@ -142,6 +143,11 @@ int	main(int argc, char **argv)
 		signal(SIGUSR1, confirmed);
 		signal(SIGUSR2, confirmed);
 		pid = ft_atoi(argv[1]);
+		if (pid <= 0)
+		{
+			ft_printf(RED "Error: Invalid PID\n" RESET);
+			exit(EXIT_FAILURE);
+		}
 		sender(argv[2], pid);
 	}
 	else
@@ -149,5 +155,5 @@ int	main(int argc, char **argv)
 		ft_printf(RED "Error: Wrong format\n" RESET);
 		ft_printf(RED "Try: ./client_bonus <PID> <MESSAGE>\n" RESET);
 	}
-	return (EXIT_FAILURE);
+	return (0);
 }
