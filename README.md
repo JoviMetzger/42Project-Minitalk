@@ -38,6 +38,12 @@ The client can use the following signals:
 ### Bonus:
 The bonus part of the program includes acknowledging every message received by sending back a signal to the client. It also supports Unicode characters, allowing the transmission of non-English characters, special characters, and emojis.
 
+***PLEASE NOTE:** My minitalk program does not have the necessary code to support Unicode. However, it is capable of printing Unicode characters. My assumption is that since Unicode characters can be encoded in various formats like UTF-8, it is crucial to ensure that the data passed to the write() function is appropriately encoded.*
+
+*In my code, the ft_putchar() functions assume that the data passed to the write() function is encoded using the standard character encoding, typically UTF-8. This allows these functions to correctly write Unicode characters.*
+
+*Therefore, if the console or terminal being used supports Unicode and is configured to display the characters correctly, the program should be able to successfully write Unicode characters using the provided functions.*
+
 ### Functions Allowed
 
 - **`write`**: Attempt to write nbyte bytes from the buffer pointed to by 'buf' to the file associated with the open file descriptor. *(`ssize_t write(int fd, const void *buf, size_t count);`)*
