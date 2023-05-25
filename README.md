@@ -41,7 +41,7 @@ The bonus part of the program includes acknowledging every message received by s
 ### Functions Allowed
 
 - **`write`**: Attempt to write nbyte bytes from the buffer pointed to by 'buf' to the file associated with the open file descriptor. *(`ssize_t write(int fd, const void *buf, size_t count);`)*
-- **`ft_printf`**: Your own ft_printf(), is a replicate of the origninal printf(). *(`int ft_printf(const char *format, ...);`)*
+- **`ft_printf`**: Your own ft_printf(), is a replicate of the original printf(). *(`int ft_printf(const char *format, ...);`)*
 - **`signal`**: Specify the action to be taken when a specific signal is received by a process. *(`sighandler_t signal(int signum, sighandler_t handler);`)*
 - **`sigemptyset`**: Initialize an empty signal set. *(`int sigemptyset(sigset_t *set);`)*
 - **`sigaddset`**: Adds a specific signal to a signal set. *(`int sigaddset(sigset_t *set, int signum);`)*
