@@ -1,4 +1,4 @@
-# 🖥️ minitalk
+# 🖥️ Minitalk
 
 Minitalk is a repository that contains a small data exchange program using UNIX signals. 
 
