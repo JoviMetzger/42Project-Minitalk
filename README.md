@@ -148,4 +148,3 @@ $ ./client <PID> "stresstest250k"
 ## Resources
 
 - [StressTest](https://github.com/XEDGit/minitalk/tree/master)
-- [Project subject](https://cdn.intra.42.fr/pdf/pdf/68781/en.subject.pdf)
